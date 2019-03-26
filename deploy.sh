@@ -6,6 +6,7 @@ set -e
 # Cause a pipeline (for example, curl -s http://sipb.mit.edu/ | grep foo) to produce a failure return code if any command errors not just the last command of the pipeline.
 set -o pipefail
 
+# print out the branch that is being deployed
 echo "${CIRCLE_BRANCH}"
 
 # Print shell input lines as they are read.
@@ -18,6 +19,10 @@ source "$(dirname "$0")/buildrc"
 curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
 sudo dpkg -i cf-cli_amd64.deb
 cf -v
+
+# get the autopilot plugin
+curl -v -L -o autopilot-linux 'https://github.com/apigovau/build/raw/master/autopilot/autopilot-linux'
+yes | cf install-plugin autopilot-linux
 
 # login to cloud foundry if env vars are present
 login() {
@@ -45,9 +50,9 @@ login() {
 main() {
   login
   if [[ "${CIRCLE_BRANCH}" = "staging" ]]; then
-    cf push "staging-${APPNAME}" -f manifest-staging.yml
+    cf zero-downtime-push "staging-${APPNAME}" -f manifest-staging.yml
   elif [[ "${CIRCLE_BRANCH}" = "prod" ]]; then
-    cf push "${APPNAME}" -f manifest-prod.yml
+    cf zero-downtime-push "${APPNAME}" -f manifest-prod.yml
   fi
 }
 
