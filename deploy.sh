@@ -22,7 +22,7 @@ cf -v
 
 # get the autopilot plugin
 curl -v -L -o autopilot-linux 'https://github.com/apigovau/build/raw/master/autopilot/autopilot-linux'
-yes | cf install-plugin autopilot-linux
+cf install-plugin autopilot-linux -f
 
 # login to cloud foundry if env vars are present
 login() {
