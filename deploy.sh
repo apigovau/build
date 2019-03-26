@@ -33,8 +33,7 @@ login() {
     cf api $CF_PROD_API
     cf auth "$CF_USER" "$CF_PASSWORD_PROD"
   else
-    cf api $CF_STAGING_API
-    cf auth "$CF_USER" "$CF_PASSWORD_STAGING"
+    exit 0
   fi
 
   cf target -o $CF_ORG
